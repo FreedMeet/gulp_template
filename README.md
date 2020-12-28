@@ -21,3 +21,5 @@ With these files, you can quickly set up building your Gulp project.
 1. Download all files to any directory
 2. Enter the command in the terminal: npm i (node.js must be installed)
 3. Run the command: gulp (running the default task, which will clear the build directory and run the scripts, styles and img-compress task, as well as watch - monitors changes in html, css, sass, scss, less, styl, js files and in the img directory )
+4. Create files in the necessary folders of the src directory
+5. Enjoy!
