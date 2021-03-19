@@ -11,6 +11,8 @@ const sourcemaps = require('gulp-sourcemaps');
 const less = require('gulp-less');
 const htmlbeautify = require('gulp-html-beautify');
 const imagemin = require('gulp-imagemin');
+const plumber = require('gulp-plumber')
+const pug = require('gulp-pug')
 
 const styleFiles = [
     './src/styles/*.less',
@@ -20,23 +22,24 @@ const scriptFiles = [
     './src/scripts/*.js',
 ]
 
-const htmlFiles = [
-    './src/*.html',
+const pugFiles = [
+    './src/pages/*.pug',
 ]
 
 const fonts = [
     './src/assets/fonts/**/*.{eot,svg,ttf,woff,woff2}',
 ]
 
-gulp.task('html_main', () => {
-    return gulp.src(htmlFiles)
-        .pipe(concat('index.html'))
-        .pipe(gulp.dest('./build'))
-        .pipe(browserSync.stream());
+gulp.task('pugToHtml', () => {
+    return gulp.src(pugFiles)
+        .pipe(plumber())
+        .pipe(pug())
+        .pipe(gulp.dest('build'))
 });
 
 gulp.task('styles', () => {
     return gulp.src(styleFiles)
+        .pipe(plumber())
         .pipe(sourcemaps.init())
         //Choice stylus() , sass() или less()
         .pipe(less())
@@ -78,7 +81,7 @@ gulp.task('beauty', () => {
 });
 
 gulp.task('fonts', () => {
-    gulp.src('./src/assets/fonts/**/*.{eot,svg,ttf,woff,woff2}')
+    gulp.src(fonts)
         .pipe(gulp.dest('./build/assets/fonts/'));
 });
 
@@ -95,8 +98,8 @@ gulp.task('watch', () => {
     gulp.watch('./src/assets/img/**', gulp.series('img-compress'))
     gulp.watch('./src/styles/**/*.{css,stylus,less,sass,scss}', gulp.series('styles'))
     gulp.watch('./src/scripts/**/*.js', gulp.series('scripts'))
-    gulp.watch('./src/**/*.html', gulp.series('html_main'))
+    gulp.watch('./src/**/*.pug', gulp.series('pugToHtml'))
     gulp.watch("./**/*.html").on('change', browserSync.reload)
 });
 
-gulp.task('default', gulp.series('del', gulp.parallel('html_main', 'styles', 'scripts', 'img-compress'), 'watch'));
+gulp.task('default', gulp.series('del', gulp.parallel('pugToHtml', 'styles', 'scripts', 'img-compress'), 'watch'));
